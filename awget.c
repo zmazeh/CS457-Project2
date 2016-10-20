@@ -28,7 +28,7 @@ void error(const char *msg)
 
 typedef struct chainLink 
 {
-	char SSaddr[256];
+	char SSaddr[20];
 	int SSport;
 }chainLink;
 
@@ -60,24 +60,58 @@ int main(int argc, char * argv[]){
      }
 	fp = fopen(fileName, "r");
 	if(fp){
-		int chainSize;
+		size_t chainSize;
 		int lineNum = 1;
+		int buffcount = 0;
+		struct chainLink *chain;
+		char addr[256];
+		int port = 0;
+		
+		int chaincount = 0;
 		while(fscanf(fp, "%s",buff) !=EOF){
-			
 			if(lineNum == 1){
 				chainSize = atoi(buff);
+				printf("chainSize = %zu\n",chainSize);
+				chain = calloc(chainSize, 28);
+				printf("sizeof(chain) = %lu\n",sizeof(chain)); //why is sizeof(chain) = 8??  
 			}else{
-				char *addr;
-				int port;
-				struct *chainLink[chainSize];
-				 
+				struct chainLink link;
+				if(buffcount % 2 == 0){ //if we are looking at the address
+					strcpy(addr,buff);
+					addr[strlen(addr)-1] = '\0';
+					printf("addr = %s\n",addr);
+					strcpy(link.SSaddr,addr);
+					printf("link.SSaddr = %s\n", link.SSaddr);
+				}else{//if we are looking at the port number
+					port = atoi(buff);
+					printf("port = %d\n",port);
+					link.SSport = port;
+					printf("link.SSport = %d\n", link.SSport);
+
+				}
+				
+				buffcount++;
+
+				
 			}
-			printf("%s",buff);
+		memcpy(&chain[chaincount],&link,sizeof(link));
+		printf("chain%d addr = %s\n", chaincount, chain[chaincount].SSaddr);
+		printf("chain%d port = %d\n", chaincount, chain[chaincount].SSport);
+		chaincount++;
 			lineNum++;
 			
 		}
-		printf("chainSize = %d\n",chainSize);
+		
+		free(chain);
 		fclose(fp);
+		/*printf("chain0 addr = %s\n", chain[0].SSaddr);
+		printf("chain0 port = %d\n", chain[0].SSport);
+		printf("chain1 addr = %s\n", chain[1].SSaddr);
+		printf("chain1 port = %d\n", chain[1].SSport);
+		printf("chain2 addr = %s\n", chain[2].SSaddr);
+		printf("chain2 port = %d\n", chain[2].SSport);
+		*/
 	}
+	
 	return 0;
 }
