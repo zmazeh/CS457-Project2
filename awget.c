@@ -66,51 +66,40 @@ int main(int argc, char * argv[]){
 		struct chainLink *chain;
 		char addr[256];
 		int port = 0;
-		
+		struct chainLink link;
 		int chaincount = 0;
 		while(fscanf(fp, "%s",buff) !=EOF){
 			if(lineNum == 1){
 				chainSize = atoi(buff);
 				printf("chainSize = %zu\n",chainSize);
-				chain = calloc(chainSize, 28);
-				printf("sizeof(chain) = %lu\n",sizeof(chain)); //why is sizeof(chain) = 8??  
+				chain = malloc (chainSize * sizeof(chainLink));
 			}else{
-				struct chainLink link;
+				
 				if(buffcount % 2 == 0){ //if we are looking at the address
 					strcpy(addr,buff);
 					addr[strlen(addr)-1] = '\0';
-					printf("addr = %s\n",addr);
+					//printf("addr = %s\n",addr);
 					strcpy(link.SSaddr,addr);
-					printf("link.SSaddr = %s\n", link.SSaddr);
+					//printf("link.SSaddr = %s\n", link.SSaddr);
 				}else{//if we are looking at the port number
 					port = atoi(buff);
-					printf("port = %d\n",port);
+					//printf("port = %d\n",port);
 					link.SSport = port;
-					printf("link.SSport = %d\n", link.SSport);
-
+					//printf("link.SSport = %d\n", link.SSport);
+					chain[chaincount] = link;
+					chaincount++;
 				}
-				
 				buffcount++;
-
-				
 			}
-		memcpy(&chain[chaincount],&link,sizeof(link));
-		printf("chain%d addr = %s\n", chaincount, chain[chaincount].SSaddr);
-		printf("chain%d port = %d\n", chaincount, chain[chaincount].SSport);
-		chaincount++;
-			lineNum++;
-			
+			lineNum++;			
+		}		
+		int index;
+		for(index = 0; index < chainSize; index++){
+			printf("chain%d addr = %s\n", index, chain[index].SSaddr);
+			printf("chain%d port = %d\n", index, chain[index].SSport);
 		}
-		
 		free(chain);
 		fclose(fp);
-		/*printf("chain0 addr = %s\n", chain[0].SSaddr);
-		printf("chain0 port = %d\n", chain[0].SSport);
-		printf("chain1 addr = %s\n", chain[1].SSaddr);
-		printf("chain1 port = %d\n", chain[1].SSport);
-		printf("chain2 addr = %s\n", chain[2].SSaddr);
-		printf("chain2 port = %d\n", chain[2].SSport);
-		*/
 	}
 	
 	return 0;
